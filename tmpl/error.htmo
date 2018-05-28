@@ -1,5 +1,7 @@
+{{#let}}title:Error{{/let}}
+
 {{#wrap}}../../base.htmo:
     <main>
-        <h1>Hey there!</h1>
+        <p>{{text}}</p>
     </main>
 {{/wrap}}
