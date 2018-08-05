@@ -3,6 +3,7 @@
         <form method=post>
             <label for=url>URL:</label>
             <input type=url name=url>
+            <button type=submit>Download</button>
         </form>
     </main>
 {{/wrap}}

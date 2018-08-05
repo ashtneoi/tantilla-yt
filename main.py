@@ -71,39 +71,51 @@ def home(req, username):
         if "url" not in req.form:
             return status(req, 400)
 
-        p = sub.run(
-            (
-                "youtube-dl",
-                "-x",
-                "--audio-format", "mp3",
-                "--get-filename",
-                req.form["url"],
-            ),
-            universal_newlines=True,
-            stdout=sub.PIPE,
-            timeout=60,
-        )
+        try:
+            p = sub.run(
+                (
+                    "youtube-dl",
+                    "-x",
+                    "--audio-format", "mp3",
+                    "--get-filename",
+                    req.form["url"],
+                ),
+                universal_newlines=True,
+                stdout=sub.PIPE,
+                timeout=10,
+            )
+        except sub.TimeoutExpired:
+            return HTMLResponse(render_path("tmpl/error.htmo", {
+                "base": MOUNT_POINT,
+                "text": escape("Getting name took too long"),
+            }))
         if p.returncode != 0:
             return HTMLResponse(render_path("tmpl/error.htmo", {
                 "base": MOUNT_POINT,
-                "text": escape("Can't get video/audio name (don't know why)"),
+                "text": escape("Can't get name (site might not be supported)"),
             }))
         vid_name = p.stdout.strip()
 
         sub.run(("rm", "-rf", "dl/"))
         os.mkdir("dl")
 
-        p = sub.run(
-            (
-                "youtube-dl",
-                "-x",
-                "--audio-format", "mp3",
-                "-o", "dl/" + vid_name,
-                req.form["url"],
-            ),
-            stdout=sub.DEVNULL,
-            timeout=60,
-        )
+        try:
+            p = sub.run(
+                (
+                    "youtube-dl",
+                    "-x",
+                    "--audio-format", "mp3",
+                    "-o", "dl/" + vid_name,
+                    req.form["url"],
+                ),
+                stdout=sub.DEVNULL,
+                timeout=60,
+            )
+        except sub.TimeoutExpired:
+            return HTMLResponse(render_path("tmpl/error.htmo", {
+                "base": MOUNT_POINT,
+                "text": escape("Downloading took too long"),
+            }))
         if p.returncode != 0:
             return HTMLResponse(render_path("tmpl/error.htmo", {
                 "base": MOUNT_POINT,

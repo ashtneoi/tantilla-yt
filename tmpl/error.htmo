@@ -3,5 +3,6 @@
 {{#wrap}}../../base.htmo:
     <main>
         <p>{{text}}</p>
+        <p><a href>Go back</a></p>
     </main>
 {{/wrap}}
